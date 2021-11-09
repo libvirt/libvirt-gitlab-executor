@@ -1,0 +1,17 @@
+---
+- name: Set up gitlab-runner node
+  hosts: all
+  tasks:
+    - include_tasks: "{{ playbook_dir }}/tasks/users.yml"
+    - include_tasks: "{{ playbook_dir }}/tasks/gitlab-runner.yml"
+    - include_tasks: "{{ playbook_dir }}/tasks/systemd.yml"
+
+  handlers:
+    - name: reload-systemd
+      ansible.builtin.systemd:
+        daemon_reload: yes
+
+    - name: enable-call-home
+      ansible.builtin.systemd:
+        name: call_home
+        enabled: yes
