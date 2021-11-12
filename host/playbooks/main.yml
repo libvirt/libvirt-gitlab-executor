@@ -3,7 +3,6 @@
   hosts: all
   tasks:
     - include_tasks: "{{ playbook_dir }}/tasks/users.yml"
-    - include_tasks: "{{ playbook_dir }}/tasks/gitlab-runner.yml"
     - include_tasks: "{{ playbook_dir }}/tasks/systemd.yml"
 
   handlers:

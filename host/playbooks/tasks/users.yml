@@ -16,9 +16,3 @@
     user: gitlab-runner
     state: present
     key: "{{ lookup('file', '/opt/gitlab/id_ed25519.pub') }}"
-
-- name: Remove the test user
-  user:
-    name: test
-    state: absent
-    remove: yes
