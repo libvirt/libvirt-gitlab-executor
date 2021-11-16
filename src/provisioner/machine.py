@@ -88,7 +88,7 @@ class Machine:
         # this channel
         channel_name = "call_home.network"
         channel_args = [
-            "type=unix",
+            "char_type=unix",
             "mode=bind",
             f"path=/tmp/{self.name}.channel",
             "source.seclabel.model=dac",
