@@ -30,8 +30,8 @@ class CmdLine:
         )
 
         subparsers = self._parsers["__main__"].add_subparsers(metavar="COMMAND",
-                                                              dest="action",
-                                                              required=True)
+                                                              dest="action")
+        subparsers.required = True
 
         sshkeyopt = argparse.ArgumentParser(add_help=False)
         sshkeyopt.add_argument(
