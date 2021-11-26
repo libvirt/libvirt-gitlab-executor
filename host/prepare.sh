@@ -51,28 +51,6 @@ run() {
 }
 
 
-install_lcitool() {
-    LCITOOL_DIR="$WORKSPACE/libvirt-ci.git/guests/lcitool"
-
-    if lcitool &>/dev/null; then
-        return 0
-    fi
-
-    if [[ -d "$WORKSPACE/libvirt-ci.git" ]]; then
-        print_ok "Update lcitool" git -C "$WORKSPACE/libvirt-ci.git" \
-                 pull --rebase
-    else
-        print_ok "Clone lcitool repo" \
-                 git clone https://gitlab.com/libvirt/libvirt-ci.git \
-                           "$WORKSPACE/libvirt-ci.git"
-    fi
-
-    export PYTHONPATH="$LCITOOL_DIR"
-    print_ok "Install lcitool" python3 setup.py develop
-    unset PYTHONPATH
-}
-
-
 create_libvirt_base_img_pool() {
     if ! [[ -d "$POOL_PATH" ]]; then
         mkdir "$POOL_PATH"
