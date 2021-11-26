@@ -137,9 +137,11 @@ prepare_base_image() {
                           -d "$distro" || return 1
 }
 
-install_lcitool || exit 1
 
-for distro in fedora-34 centos-stream-8; do
+while [ $# -gt 0 ]; do
+    distro="$1"
+    shift
+
     prepare_base_image $distro || continue
     print_ok "Undefine template machine [$distro]" virsh undefine $distro
 done
