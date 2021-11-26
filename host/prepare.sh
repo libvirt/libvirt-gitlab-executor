@@ -1,7 +1,6 @@
 #!/bin/bash
 
 PASS=true
-WORKSPACE="/opt/gitlab"
 LOG_FILE="gitlab-provisioner.log"
 POOL_PATH="/var/lib/libvirt/images/base_imgs"
 SCRIPT_BASE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -71,21 +70,6 @@ install_lcitool() {
     export PYTHONPATH="$LCITOOL_DIR"
     print_ok "Install lcitool" python3 setup.py develop
     unset PYTHONPATH
-}
-
-
-create_workspace() {
-    if ! [[ -d "$WORKSPACE" ]]; then
-        print_ok "Create a new workspace" mkdir -p "$WORKSPACE"
-    fi
-
-    if ! [[ -f "$WORKSPACE/id_ed25519" ]]; then
-        print_ok "Generate a new SSH key pair" ssh-keygen -q \
-                                                          -N "" \
-                                                          -t ed25519 \
-                                                          -C gitlab-runner \
-                                                          -f "$WORKSPACE/id_ed25519"
-    fi
 }
 
 
@@ -175,7 +159,6 @@ prepare_base_image() {
                           -d "$distro" || return 1
 }
 
-create_workspace || exit 1
 install_lcitool || exit 1
 
 for distro in fedora-34 centos-stream-8; do
