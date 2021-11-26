@@ -52,22 +52,6 @@ run() {
 }
 
 
-install_packages() {
-    print_ok "Install necessary packages" dnf install -y \
-                                              ansible \
-                                              git \
-                                              libvirt-daemon-qemu \
-                                              libvirt-daemon-driver-network \
-                                              libvirt-daemon-config-network \
-                                              libvirt-nss \
-                                              python3-ansible-runner \
-                                              python3-libvirt \
-                                              python3-pyyaml \
-                                              virt-install
-
-}
-
-
 install_lcitool() {
     LCITOOL_DIR="$WORKSPACE/libvirt-ci.git/guests/lcitool"
 
@@ -192,7 +176,6 @@ prepare_base_image() {
 }
 
 create_workspace || exit 1
-install_packages || exit 1
 install_lcitool || exit 1
 
 for distro in fedora-34 centos-stream-8; do
