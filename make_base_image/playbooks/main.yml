@@ -1,6 +1,7 @@
 ---
 - name: Set up gitlab-runner node
   hosts: all
+  remote_user: root
   tasks:
     - include_tasks: "{{ playbook_dir }}/tasks/users.yml"
     - include_tasks: "{{ playbook_dir }}/tasks/systemd.yml"
