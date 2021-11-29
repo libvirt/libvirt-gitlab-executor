@@ -143,7 +143,6 @@ while [ $# -gt 0 ]; do
     shift
 
     prepare_base_image $distro || continue
-    print_ok "Undefine template machine [$distro]" virsh undefine $distro
 done
 
 if ! $PASS; then
