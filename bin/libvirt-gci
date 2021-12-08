@@ -83,8 +83,11 @@ if __name__ == "__main__":
     distro = os.environ.get("CUSTOM_ENV_DISTRO")
     job_id = os.environ.get("CUSTOM_ENV_CI_JOB_ID")
 
-    # off-GitLab (manual) execution
-    if not all([project, distro, job_id]):
+    # GitLab-driven provision
+    if all([project, distro, job_id]):
+        name = f"gitlab-{project}-{distro}-{job_id}"
+    else:
+        # Manual provision
         distro = None
         name = args.machine
         if args.action == "prepare":
