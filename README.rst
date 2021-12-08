@@ -67,8 +67,8 @@ using `lcitool <https://gitlab.com/libvirt/libvirt-ci>`_:
     ``$ lcitool update libvirt-tck+runtime``
 
 
-Creating template
------------------
+Creating a template
+-------------------
 
 Now that a machine is ready to become a template, run the following to create
 the base image. Technically it's not needed to run the following with root
