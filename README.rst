@@ -112,6 +112,51 @@ TIP: Don't forget to set the ``concurrent`` argument for the gitlab-runner agent
 to make sure several VM jobs can run in parallel on your host.
 
 
+Provisioning a test instance manually
+-------------------------------------
+
+If you experience failures using the setup with GitLab it might be beneficial
+to be able to provision an instance manually the same way gitlab does. The
+reason for that is simple - gitlab always cleans up the machine after the job
+is finished, no matter if it passed or failed. So naturally, one would like to
+poke around the machine to see what could have caused the failure. One way
+of doing it is defining the same environment variables GitLab uses in their CI
+pipeline workflow.
+
+::
+
+    $ CUSTOM_ENV_CI_PROJECT_NAME=libvirt \
+      CUSTOM_ENV_CI_JOB_ID=12345 \
+      CUSTOM_ENV_DISTRO=fedora-34 \
+      libvirt-gci prepare
+
+The other is to omit them and use the following options:
+
+::
+
+    $ libvirt-gci prepare --distro <template_os> [--machine <instance_name>]
+
+Note that both of the above expect that you have installed the project binary
+using the ``setup.py`` script.
+
+Once you're done playing with the instance, you can destroy it with the same
+tool using either of the following ways depending on which way you provisioned
+the instance:
+
+::
+
+    $ CUSTOM_ENV_CI_PROJECT_NAME=libvirt \
+      CUSTOM_ENV_CI_JOB_ID=12345 \
+      CUSTOM_ENV_DISTRO=fedora-34 \
+      libvirt-gci cleanup
+
+or
+
+::
+
+    $ libvirt-gci cleanup --machine <instance_name>
+
+
 License
 =======
 
