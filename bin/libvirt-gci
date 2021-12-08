@@ -8,9 +8,11 @@
 
 import logging
 import os
+import random
 import sys
 
 from pathlib import Path
+from string import ascii_letters
 
 from provisioner.cmdline import CmdLine
 from provisioner.logger import LevelFormatter
@@ -81,16 +83,27 @@ if __name__ == "__main__":
     distro = os.environ.get("CUSTOM_ENV_DISTRO")
     job_id = os.environ.get("CUSTOM_ENV_CI_JOB_ID")
 
-    # test mode if running locally
+    # off-GitLab (manual) execution
     if not all([project, distro, job_id]):
-        project = "test" if project is None else project
-        distro = "fedora-34" if distro is None else distro
-        job_id = "12345" if job_id is None else job_id
+        distro = None
+        name = args.machine
+        if args.action == "prepare":
+            distro = args.distro
 
-    hostname = f"gitlab-{project}-{distro}-{job_id}"
+            if distro is None:
+                log.error("No distro specified for manual execution")
+                sys.exit(1)
+
+            if name is None:
+                randstr = "".join(random.sample(ascii_letters, 8))
+                name = f"{distro}-{randstr}"
+        else:
+            if name is None:
+                log.error("No machine name specified for manual execution")
+                sys.exit(1)
 
     try:
-        args.func(args, hostname)
+        args.func(args, name)
     except Exception as ex:
         print(ex, file=sys.stderr)
         sys.exit(1)

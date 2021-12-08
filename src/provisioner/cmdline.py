@@ -46,7 +46,18 @@ class CmdLine:
                 help=f"GitLab {command} stage parser",
                 parents=[sshkeyopt]
             )
+
+            parser.add_argument(
+                "-m", "--machine",
+                help="machine instance to operate on",
+            )
+
             self._parsers[command] = parser
+
+        self._parsers["prepare"].add_argument(
+            "-d", "--distro",
+            help="what OS distro base image to use for provisioning",
+        )
 
         self._parsers["run"].add_argument(
             "executable",
