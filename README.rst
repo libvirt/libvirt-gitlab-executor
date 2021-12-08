@@ -50,7 +50,9 @@ using `lcitool <https://gitlab.com/libvirt/libvirt-ci>`_:
 
 (1) Clone the lcitool git repository
 
-    ``$ git clone https://gitlab.com/libvirt/libvirt-ci.git``
+::
+
+    $ git clone https://gitlab.com/libvirt/libvirt-ci.git
 
 (2) Follow the instructions to install/run lcitool in the README file inside the
     lcitool's repo
@@ -59,12 +61,16 @@ using `lcitool <https://gitlab.com/libvirt/libvirt-ci>`_:
     that the user running this command needs to be in the libvirt group OR use
     sudo
 
-    ``$ lcitool install my-fedora --wait``
+::
+
+    $ lcitool install my-fedora --wait
 
 (4) Update the installed instance with dependencies for a given project, in this
     example - *libvirt-tck+runtime*, see lcitool's README on how this works
 
-    ``$ lcitool update libvirt-tck+runtime``
+::
+
+    $ lcitool update libvirt-tck+runtime
 
 
 Creating a template
@@ -76,7 +82,9 @@ privileges, but since the VM image is located in /var/lib/libvirt/base_imgs
 which requires privileges, it would be necessary to adjust the permissions, so
 that libguestfs tools can access the images in order to create templates:
 
-    ``$ sudo make_base_image/make_base_image.sh vm1 vm2 vmN``
+::
+
+    $ sudo make_base_image/make_base_image.sh vm1 vm2 vmN
 
 You have now successfully created base images for your VMs and can use them with
 GitLab's custom executor.
