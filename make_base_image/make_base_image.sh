@@ -123,13 +123,6 @@ stop_domain() {
 prepare_base_image() {
     distro=$1
 
-    print_ok "Start virtual machine [$distro]" start_domain $distro || return 1
-
-    print_ok "Customize machine for GitLab [$distro]" \
-             ansible-playbook -i "$distro," \
-                              --ssh-common-args "$COMMON_SSH_ARGS" \
-                              "$SCRIPT_BASE/playbooks/main.yml" || return 1
-
     print_ok "Shut down virtual machine [$distro]" stop_domain $distro
 
     print_ok "Create a machine template [$distro]" \
