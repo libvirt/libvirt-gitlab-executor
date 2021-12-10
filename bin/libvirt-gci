@@ -108,5 +108,8 @@ if __name__ == "__main__":
     try:
         args.func(args, name)
     except Exception as ex:
-        print(ex, file=sys.stderr)
+        if args.debug:
+            log.exception(ex)
+        else:
+            print(ex, file=sys.stderr)
         sys.exit(1)
