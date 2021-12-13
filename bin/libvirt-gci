@@ -22,7 +22,6 @@ from provisioner.machine import Machine
 def cmd_prepare(args, hostname):
     machine = Machine(hostname)
     machine.provision(distro)
-    machine.wait()
     machine.connect(args.ssh_key_file)
 
 

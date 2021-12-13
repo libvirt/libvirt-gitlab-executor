@@ -79,31 +79,6 @@ class LibvirtHandle:
                                        backing_vol_path=backing_vol_path,
                                        backing_vol_format=backing_vol_format))
 
-    def wait_for_machine(self, name):
-        log.debug(f"Looking up domain object: name={name}")
-
-        channel_path = ""
-        domain = self.conn.lookupByName(name)
-
-        xml_root_node = xmlparser.fromstring(domain.XMLDesc())
-        devices_node = xml_root_node.find("devices")
-        for channel in devices_node.findall("channel"):
-            target_node = channel.find("target")
-            source_node = channel.find("source")
-            if target_node.get("name") == "call_home.network":
-                channel_path = source_node.get("path")
-
-        log.debug(f"Opening channel '{channel_path}' to listen")
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        sock.connect(channel_path)
-
-        try:
-            sock.settimeout(30)
-            sock.recv(1)
-        except socket.timeout:
-            print("socket timeout reached")
-            sys.exit(1)
-
     def cleanup_machine(self, name):
         try:
             log.debug("Destroying domain '{name}'")

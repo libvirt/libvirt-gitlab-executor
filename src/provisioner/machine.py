@@ -31,7 +31,6 @@ class Machine:
 
     The usual flow of actions is as follow:
         m = Machine(name)
-        m.wait()   # optional, but connections will fail until networking is up
         conn = m.connect()  # verifies that jobs can be sent to the VM over SSH
         conn.upload(script, remote_dest)
         rc = conn.exec(cmd, [cmd_args])
@@ -39,20 +38,6 @@ class Machine:
 
     def __init__(self, name):
         self.name = name
-
-    def wait(self):
-        """
-        Wait until networking is up and running in the VM.
-
-        Uses a virtio channel over a UNIX socket and a simple agent installed
-        in the VM to know when the machine becomes online and ready for
-        connections.
-        """
-
-        log.debug(f"Waiting for machine '{self.name}' to become online")
-
-        libvirt_handle = LibvirtHandle()
-        libvirt_handle.wait_for_machine(self.name)
 
     def connect(self, ssh_key_path=None):
         """Opens an SSH channel to the VM."""
@@ -94,26 +79,9 @@ class Machine:
 
         log.debug(f"Provisioning machine '{self.name}'")
 
-        username = util.get_username()
-
         # create the storage for the VM first
         libvirt_handle = LibvirtHandle()
         path = libvirt_handle.create_volume(self.name, size, distro)
-
-        # the bootstrap service will signal that the machine is online through
-        # this channel
-        channel_name = "call_home.network"
-        channel_args = [
-            "char_type=unix",
-            "mode=bind",
-            f"path=/tmp/{self.name}.channel",
-            "source.seclabel.model=dac",
-            "source.seclabel.relabel=yes",
-            f"source.seclabel.label={username}:qemu",
-            "target.type=virtio",
-            f"target.name={channel_name}"
-        ]
-        channel_args_str = ",".join(channel_args)
 
         # Start the cloud-init phone home server
         server = cloud_init.CloudInitPhoneHomeServer(self.name)
@@ -131,7 +99,6 @@ class Machine:
             "--network", "network=default,model=virtio",
             "--graphics", "none",
             "--sound", "none",
-            "--channel", f"{channel_args_str}",
             "--transient",
             "--console", "pty",
             "--noautoconsole",
