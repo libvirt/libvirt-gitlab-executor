@@ -54,8 +54,7 @@ class Machine:
         """Opens an SSH channel to the VM."""
 
         if ssh_key_path is None:
-            homedir = util.get_homedir(util.get_username())
-            ssh_key_path = Path(homedir, ".ssh/id_ed25519")
+            ssh_key_path = Path(Path.home(), ".ssh/id_ed25519")
 
         try:
             log.debug(f"Connecting to '{self.name}'")
