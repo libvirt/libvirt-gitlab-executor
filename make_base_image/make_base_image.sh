@@ -130,13 +130,14 @@ prepare_base_image() {
              virt-sysprep -d "$distro" || return 1
 }
 
-
+tput civis
 while [ $# -gt 0 ]; do
     distro="$1"
     shift
 
     prepare_base_image $distro || continue
 done
+tput cnorm
 
 if ! $PASS; then
     echo "See '$LOG_FILE' for more details about the failures"
