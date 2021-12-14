@@ -18,6 +18,7 @@ print_ok() {
     ret=1
     shift
 
+    echo -en "[i] $action\r"
     run "$@"
     if [[ $? -eq 0 ]]; then
         echo -e "[${GREEN}OK${CLEAR}] $action"
