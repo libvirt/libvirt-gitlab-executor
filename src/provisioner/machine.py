@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import logging
+import os
 import subprocess
 import sys
 import yaml
@@ -114,6 +115,11 @@ class Machine:
         ]
         channel_args_str = ",".join(channel_args)
 
+        # Start the cloud-init phone home server
+        server = cloud_init.CloudInitPhoneHomeServer(self.name)
+        user_data = cloud_init.get_user_data(self.name, server.address)
+        user_data_file = self._dump_user_data(user_data)
+
         cmd = [
             "virt-install",
             "--connect", "qemu:///system",
@@ -129,10 +135,13 @@ class Machine:
             "--transient",
             "--console", "pty",
             "--noautoconsole",
+            "--cloud-init", f"user-data={user_data_file}",
             "--import"
         ]
 
         subprocess.check_call(cmd)
+        server.wait()
+        os.unlink(user_data_file)
 
     def teardown(self):
         """Cleans up the VM instance along with its block storage overlay."""
