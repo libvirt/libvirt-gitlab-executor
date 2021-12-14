@@ -13,7 +13,6 @@ import yaml
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from provisioner import util
 from provisioner import cloud_init
 from provisioner.libvirt_handle import LibvirtHandle
 from provisioner.ssh import SSHConn
