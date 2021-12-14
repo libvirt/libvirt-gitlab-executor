@@ -23,6 +23,11 @@ class LibvirtHandle:
         return cls.__instance
 
     def __init__(self, uri="qemu:///system"):
+        def nop_error_handler(_T, iterable):
+            return None
+
+        # Disable libvirt's default console error logging
+        libvirt.registerErrorHandler(nop_error_handler, None)
         self.conn = libvirt.open(uri)
 
     def __del__(self):
