@@ -7,10 +7,13 @@
 import logging
 import subprocess
 import sys
+import yaml
 
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 from provisioner import util
+from provisioner import cloud_init
 from provisioner.libvirt_handle import LibvirtHandle
 from provisioner.ssh import SSHConn
 
@@ -66,6 +69,19 @@ class Machine:
             sys.exit(1)
 
         return conn
+
+    def _dump_user_data(self, user_data):
+        tempfile = NamedTemporaryFile(delete=False,
+                                      prefix=(self.name + "-cloud-config"))
+
+        with open(tempfile.name, "w") as fd:
+            # nasty hack to force PyYAML not to break long lines by default
+            from math import inf
+
+            # must write the header first, otherwise cloud-init will ignore the file
+            fd.write("#cloud-config\n")
+            fd.write(yaml.dump(user_data, width=inf))
+        return tempfile.name
 
     def provision(self, distro, size=50):
         """
