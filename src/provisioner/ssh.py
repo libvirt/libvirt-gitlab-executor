@@ -13,6 +13,17 @@ from pathlib import Path
 log = logging.getLogger(__name__)
 
 
+def get_user_ssh_keys(username=None):
+    pubkeys = []
+    for entry in Path(Path.home(), ".ssh").iterdir():
+        if entry.suffix != ".pub":
+            continue
+        with open(entry) as fd:
+            pubkeys.append(fd.readline())
+
+    return pubkeys
+
+
 class SSHConn:
     """
     Wrapper class over the Paramiko library.
