@@ -14,6 +14,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 from provisioner import cloud_init
+from provisioner.configmap import ConfigMap
 from provisioner.libvirt_handle import LibvirtHandle
 from provisioner.ssh import SSHConn
 
@@ -106,6 +107,9 @@ class Machine:
             "--cloud-init", f"user-data={user_data_file}",
             "--import"
         ]
+
+        if not ConfigMap()["debug"]:
+            cmd.append("--quiet")
 
         subprocess.check_call(cmd)
         server.wait()
