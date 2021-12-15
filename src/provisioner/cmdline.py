@@ -10,9 +10,6 @@ import argparse
 class CmdLine:
     """
     Command line parser.
-
-    Caller can register their own callback for each of the arguments with the``
-    'register_cb' method.
     """
 
     def __init__(self):
@@ -79,8 +76,3 @@ class CmdLine:
         """Parses the command line arguments (Argparse entry point)."""
 
         return self._parsers["__main__"].parse_args()
-
-    def register_cb(self, command, cb):
-        """Registers a callback for a subcommand."""
-
-        self._parsers[command].set_defaults(func=cb)

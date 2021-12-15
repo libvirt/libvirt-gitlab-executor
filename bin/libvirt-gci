@@ -7,46 +7,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import logging
-import os
-import random
 import sys
 
-from pathlib import Path
-from string import ascii_letters
-
+from provisioner.application import Application
 from provisioner.cmdline import CmdLine
 from provisioner.logger import LevelFormatter
-from provisioner.machine import Machine
-
-
-def cmd_prepare(args, hostname):
-    machine = Machine(hostname)
-    machine.provision(distro)
-    machine.connect(args.ssh_key_file)
-
-
-def cmd_run(args, hostname):
-    cmd_str = args.executable
-    cmd_args = args.exec_args
-    machine = Machine(hostname)
-    conn = machine.connect(args.ssh_key_file)
-
-    if args.script:
-        basename = Path(args.executable).name
-        with open(args.executable, "r"):
-            pass
-
-        dest = f"/tmp/{basename}"
-        conn.upload(args.executable, dest)
-        cmd_str = "/bin/bash"
-        cmd_args = [dest] + args.exec_args
-
-    conn.exec(cmd_str, cmd_args)
-
-
-def cmd_cleanup(args, hostname):
-    machine = Machine(hostname)
-    machine.teardown()
 
 
 def logInit():
@@ -67,45 +32,16 @@ def logInit():
 
 if __name__ == "__main__":
     log = logInit()
-
-    cli = CmdLine()
-    cli.register_cb("prepare", cmd_prepare)
-    cli.register_cb("run", cmd_run)
-    cli.register_cb("cleanup", cmd_cleanup)
-    args = cli.parse()
+    args = CmdLine().parse()
 
     if args.debug:
         log.setLevel(logging.DEBUG)
 
-    # GitLab will set these with every job
-    project = os.environ.get("CUSTOM_ENV_CI_PROJECT_NAME")
-    distro = os.environ.get("CUSTOM_ENV_DISTRO")
-    job_id = os.environ.get("CUSTOM_ENV_CI_JOB_ID")
-
-    # GitLab-driven provision
-    if all([project, distro, job_id]):
-        name = f"gitlab-{project}-{distro}-{job_id}"
-    else:
-        # Manual provision
-        distro = None
-        name = args.machine
-        if args.action == "prepare":
-            distro = args.distro
-
-            if distro is None:
-                log.error("No distro specified for manual execution")
-                sys.exit(1)
-
-            if name is None:
-                randstr = "".join(random.sample(ascii_letters, 8))
-                name = f"{distro}-{randstr}"
-        else:
-            if name is None:
-                log.error("No machine name specified for manual execution")
-                sys.exit(1)
+    cli_args = vars(args)
+    log.debug(f"Cmdline args={cli_args}")
 
     try:
-        args.func(args, name)
+        Application(cli_args).run()
     except Exception as ex:
         if args.debug:
             log.exception(ex)
