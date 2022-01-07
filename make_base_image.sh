@@ -127,7 +127,8 @@ prepare_base_image() {
     print_ok "Shut down virtual machine [$distro]" stop_domain $distro
 
     print_ok "Create a machine template [$distro]" \
-             virt-sysprep -d "$distro" || return 1
+             virt-sysprep --operations defaults,-ssh-userdir \
+                          -d "$distro" || return 1
 }
 
 tput civis
