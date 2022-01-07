@@ -117,8 +117,10 @@ stop_domain() {
         return 1
     fi
 
-    run virsh shutdown $distro || return 1
-    wait_for_domain_status $distro "shut off"
+    if [[ $(virsh domstate $distro) != "shut off" ]]; then
+        run virsh shutdown $distro || return 1
+        wait_for_domain_status $distro "shut off"
+    fi
 }
 
 prepare_base_image() {
