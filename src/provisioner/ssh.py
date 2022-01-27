@@ -92,7 +92,7 @@ class SSHConn:
 
         data = channel.recv(1024)
         while data:
-            sys.stdout.write(data.decode())
+            print(data.decode(), end="", flush=True)
             data = channel.recv(1024)
 
         if channel.recv_exit_status() != 0:
