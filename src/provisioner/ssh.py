@@ -95,5 +95,4 @@ class SSHConn:
             print(data.decode(), end="", flush=True)
             data = channel.recv(1024)
 
-        if channel.recv_exit_status() != 0:
-            raise Exception(f"Command execution failed ({cmd_str})")
+        return channel.recv_exit_status()
