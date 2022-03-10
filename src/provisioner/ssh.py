@@ -61,9 +61,12 @@ class SSHConn:
 
         log.debug(f"Uploading '{src}' to '{dst}'")
 
-        sftp = self._client.open_sftp()
-        sftp.put(src, dst)
-        sftp.close()
+        try:
+            sftp = self._client.open_sftp()
+            sftp.put(src, dst)
+            sftp.close()
+        except Exception as ex:
+            raise Exception(f"Failed to upload script over SSH: {ex}")
 
     def exec(self, command, command_args=[]):
         """
