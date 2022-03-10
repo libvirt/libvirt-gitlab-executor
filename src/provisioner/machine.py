@@ -52,8 +52,7 @@ class Machine:
                            username="gitlab-runner",
                            key_filepath=ssh_key_path)
         except Exception as ex:
-            print(ex, file=sys.stderr)
-            sys.exit(1)
+            raise Exception(f"Failed to connect to {self.name}: {ex}")
 
         return conn
 
