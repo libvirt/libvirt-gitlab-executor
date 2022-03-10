@@ -6,8 +6,6 @@
 
 import libvirt
 import logging
-import socket
-import sys
 import xml.etree.ElementTree as xmlparser
 
 

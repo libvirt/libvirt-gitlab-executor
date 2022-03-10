@@ -6,7 +6,6 @@
 
 import logging
 import paramiko
-import sys
 from pathlib import Path
 
 
