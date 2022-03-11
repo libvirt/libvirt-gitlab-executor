@@ -68,7 +68,7 @@ class SSHConn:
         except Exception as ex:
             raise Exception(f"Failed to upload script over SSH: {ex}")
 
-    def exec(self, command, command_args=[]):
+    def exec(self, cmdline):
         """
         Executes a command on the remote side over SSH.
 
@@ -85,13 +85,15 @@ class SSHConn:
 
         log.debug(f"Opening SSH transport channel to '{self.hostname}'")
 
+        try:
+            transport = self._client.get_transport()
+            channel = transport.open_session()
+            channel.set_combine_stderr(True)
 
-        transport = self._client.get_transport()
-        channel = transport.open_session()
-        channel.set_combine_stderr(True)
-
-        log.debug(f"Executing '{cmdline}' on '{self.hostname}'")
-        channel.exec_command(cmdline)
+            log.debug(f"Executing '{cmdline}' on '{self.hostname}'")
+            channel.exec_command(cmdline)
+        except Exception as ex:
+            raise Exception(f"SSH channel error: {ex}")
 
         data = channel.recv(1024)
         while data:
