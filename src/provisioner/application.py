@@ -78,7 +78,6 @@ class Application(metaclass=Singleton):
         machine_name = self._get_machine_name()
         cmd_str = configmap["executable"]
         cmd_args = configmap["exec_args"]
-        cmd_args_str = ' '.join(cmd_args)
         machine = Machine(machine_name)
         try:
             conn = machine.connect(configmap["ssh_key_file"])
@@ -94,15 +93,13 @@ class Application(metaclass=Singleton):
                 conn.upload(configmap["executable"], dest)
                 cmd_str = "/bin/bash"
                 cmd_args = [dest] + configmap["exec_args"]
-                cmd_args_str = ' '.join(cmd_args)
 
-            rc = conn.exec(cmd_str, cmd_args)
-            if rc != 0:
-                raise Exception(f"Remote command execution returned {rc}")
+            cmdlinestr = f"{cmd_str} {' '.join(cmd_args)}"
+            return conn.exec(cmdlinestr)
 
         except Exception as ex:
             raise Exception(
-                f"Failed to execute '{cmd_str} {cmd_args_str}' on '{machine_name}': {ex}")
+                f"Failed to execute '{cmdlinestr}' on '{machine_name}': {ex}")
 
     def _action_cleanup(self):
         machine_name = self._get_machine_name()

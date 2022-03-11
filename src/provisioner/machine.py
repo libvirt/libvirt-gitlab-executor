@@ -34,7 +34,7 @@ class Machine:
         conn = m.connect(ssh_key_file)  # verifies that jobs can be sent to the
                                           VM over SSH
         conn.upload(script, remote_dest)
-        rc = conn.exec(cmd, [cmd_args])
+        rc = conn.exec(cmdlinestr)
     """
 
     def __init__(self, name):

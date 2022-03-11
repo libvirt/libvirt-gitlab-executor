@@ -85,14 +85,13 @@ class SSHConn:
 
         log.debug(f"Opening SSH transport channel to '{self.hostname}'")
 
-        cmd_str = f"{command} {' '.join(command_args)}"
 
         transport = self._client.get_transport()
         channel = transport.open_session()
         channel.set_combine_stderr(True)
 
-        log.debug(f"Executing command '{cmd_str}' on '{self.hostname}'")
-        channel.exec_command(cmd_str)
+        log.debug(f"Executing '{cmdline}' on '{self.hostname}'")
+        channel.exec_command(cmdline)
 
         data = channel.recv(1024)
         while data:
