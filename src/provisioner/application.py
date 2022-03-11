@@ -69,6 +69,7 @@ class Application(metaclass=Singleton):
         try:
             machine.provision(configmap["distro"])
             machine.connect(configmap["ssh_key_file"])
+            return 0
         except Exception as ex:
             raise Exception(f"Failed to prepare machine '{machine_name}': {ex}")
 
@@ -105,9 +106,10 @@ class Application(metaclass=Singleton):
         machine_name = self._get_machine_name()
         try:
             Machine(machine_name).teardown()
+            return 0
         except Exception as ex:
             raise Exception(f"Failed to clean-up machine {machine_name}: {ex}")
 
     def run(self):
         cb = self.__getattribute__("_action_" + ConfigMap()["action"])
-        cb()
+        return cb()
