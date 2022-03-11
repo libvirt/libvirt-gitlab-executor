@@ -7,6 +7,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import logging
+import os
 import sys
 
 from provisioner.application import Application
@@ -30,6 +31,10 @@ def logInit():
     return log
 
 
+def err_code():
+    return os.environ.get("BUILD_FAILURE_EXIT_CODE", 1)
+
+
 if __name__ == "__main__":
     log = logInit()
     args = CmdLine().parse()
@@ -41,10 +46,13 @@ if __name__ == "__main__":
     log.debug(f"Cmdline args={cli_args}")
 
     try:
-        Application(cli_args).run()
+        ret = 0
+        if Application(cli_args).run() < 0:
+            ret = err_code()
     except Exception as ex:
+        ret = err_code()
         if args.debug:
             log.exception(ex)
         else:
             log.error(ex)
-        sys.exit(1)
+    sys.exit(ret)
