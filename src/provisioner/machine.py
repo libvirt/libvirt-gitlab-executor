@@ -110,8 +110,12 @@ class Machine:
             cmd.append("--quiet")
 
         subprocess.check_call(cmd)
-        server.wait()
-        os.unlink(user_data_file)
+        try:
+            server.wait()
+        except Exception:
+            raise
+        finally:
+            os.unlink(user_data_file)
 
     def teardown(self):
         """Cleans up the VM instance along with its block storage overlay."""
