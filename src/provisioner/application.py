@@ -64,34 +64,52 @@ class Application(metaclass=Singleton):
     def _action_prepare(self):
         configmap = ConfigMap()
 
-        machine = Machine(self._get_machine_name())
-        machine.provision(configmap["distro"])
-        machine.connect(configmap["ssh_key_file"])
+        machine_name = self._get_machine_name()
+        machine = Machine(machine_name)
+        try:
+            machine.provision(configmap["distro"])
+            machine.connect(configmap["ssh_key_file"])
+        except Exception as ex:
+            raise Exception(f"Failed to prepare machine '{machine_name}': {ex}")
 
     def _action_run(self):
         configmap = ConfigMap()
 
+        machine_name = self._get_machine_name()
         cmd_str = configmap["executable"]
         cmd_args = configmap["exec_args"]
-        machine = Machine(self._get_machine_name())
-        conn = machine.connect(configmap["ssh_key_file"])
+        cmd_args_str = ' '.join(cmd_args)
+        machine = Machine(machine_name)
+        try:
+            conn = machine.connect(configmap["ssh_key_file"])
 
-        if configmap["script"]:
-            basename = Path(configmap["executable"]).name
+            if configmap["script"]:
+                basename = Path(configmap["executable"]).name
 
-            with open(configmap["executable"], "r"):
-                # NADA - check that the file exists and we can read it
-                pass
+                with open(configmap["executable"], "r"):
+                    # NADA - check that the file exists and we can read it
+                    pass
 
-            dest = f"/tmp/{basename}"
-            conn.upload(configmap["executable"], dest)
-            cmd_str = "/bin/bash"
-            cmd_args = [dest] + configmap["exec_args"]
+                dest = f"/tmp/{basename}"
+                conn.upload(configmap["executable"], dest)
+                cmd_str = "/bin/bash"
+                cmd_args = [dest] + configmap["exec_args"]
+                cmd_args_str = ' '.join(cmd_args)
 
-        conn.exec(cmd_str, cmd_args)
+            rc = conn.exec(cmd_str, cmd_args)
+            if rc != 0:
+                raise Exception(f"Remote command execution returned {rc}")
+
+        except Exception as ex:
+            raise Exception(
+                f"Failed to execute '{cmd_str} {cmd_args_str}' on '{machine_name}': {ex}")
 
     def _action_cleanup(self):
-        Machine(self._get_machine_name()).teardown()
+        machine_name = self._get_machine_name()
+        try:
+            Machine(machine_name).teardown()
+        except Exception as ex:
+            raise Exception(f"Failed to clean-up machine {machine_name}: {ex}")
 
     def run(self):
         cb = self.__getattribute__("_action_" + ConfigMap()["action"])
