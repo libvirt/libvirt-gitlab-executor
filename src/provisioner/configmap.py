@@ -12,6 +12,13 @@ log = logging.getLogger(__name__)
 
 
 class ConfigMap(metaclass=Singleton):
+    """
+    Global configuration map instance.
+
+    A dictionary-like class. An instance of this class manages configuration
+    for an application run. This class is supposed to take care of any
+    configuration source precedence handling.
+    """
 
     def __init__(self, **kwargs):
         opts = [

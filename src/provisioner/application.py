@@ -62,6 +62,8 @@ class Application(metaclass=Singleton):
         return name
 
     def _action_prepare(self):
+        """Provisions a new VM using libvirt."""
+
         configmap = ConfigMap()
 
         machine_name = self._get_machine_name()
@@ -74,6 +76,8 @@ class Application(metaclass=Singleton):
             raise Exception(f"Failed to prepare machine '{machine_name}': {ex}")
 
     def _action_run(self):
+        """Executes a command/script remotely on the given VM."""
+
         configmap = ConfigMap()
 
         machine_name = self._get_machine_name()
@@ -103,6 +107,8 @@ class Application(metaclass=Singleton):
                 f"Failed to execute '{cmdlinestr}' on '{machine_name}': {ex}")
 
     def _action_cleanup(self):
+        """Cleans up the VM (including storage) given a name."""
+
         machine_name = self._get_machine_name()
         try:
             Machine(machine_name).teardown()
@@ -111,5 +117,11 @@ class Application(metaclass=Singleton):
             raise Exception(f"Failed to clean-up machine {machine_name}: {ex}")
 
     def run(self):
+        """
+        Application entry point.
+
+        Selects an action callback according to the CLI subcommand.
+        """
+
         cb = self.__getattribute__("_action_" + ConfigMap()["action"])
         return cb()

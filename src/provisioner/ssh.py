@@ -57,7 +57,12 @@ class SSHConn:
                              timeout=timeout)
 
     def upload(self, src, dst):
-        """Uploads a file to a remote location using SFTP."""
+        """
+        Uploads a file to the remote location using SFTP.
+
+        :param src: source path as string
+        :param dst: destination path as string
+        """
 
         log.debug(f"Uploading '{src}' to '{dst}'")
 
@@ -74,6 +79,9 @@ class SSHConn:
 
         If the command happens to be a script, the script first needs to be
         copied to the remote side (see SSHConn.upload()).
+
+        :param cmdline: full command line (including arguments) to be executed
+                        on the remote side as string
         """
 
         # Paramiko is particularly bad at running long-lasting command in a

@@ -13,6 +13,8 @@ log = logging.getLogger(__name__)
 
 
 class LibvirtHandle:
+    """Convenience wrapper for the libvirt library."""
+
     __instance = None
 
     def __new__(cls):
@@ -32,6 +34,13 @@ class LibvirtHandle:
         self.conn.close()
 
     def _get_base_image(self, name, poolname):
+        """
+        Looks up the template base image.
+
+        :param name: Name of the base image template as string
+        :param poolname: Name of the storage pool to search as string
+        """
+
         log.debug(f"Looking up base image: name={name},poolname={poolname}")
 
         pool = self.conn.storagePoolLookupByName(poolname)
@@ -43,6 +52,16 @@ class LibvirtHandle:
             raise Exception(f"Base image '{name}' not found")
 
     def create_volume(self, volname, size, distro, poolname="default"):
+        """
+        Creates an overlay volume for the given machine.
+
+        :param volname: name of the volume to be created as string
+        :param size: capacity of the volume as string/int
+        :param distro: which distro template image to look for as string
+        :param poolname: which libvirt storage pool to search for the template
+                         image as string
+        """
+
         log.debug(f"Creating overlay volume: poolname={poolname},"
                   f"distro={distro},volname={volname},size={size}")
 
@@ -78,6 +97,15 @@ class LibvirtHandle:
                                        backing_vol_format=backing_vol_format))
 
     def cleanup_machine(self, name):
+        """
+        Destroy a libvirt machine.
+
+        This method will look up a VM given a @name and will destroy it.
+
+        :param name: name of the machine to destroy as string
+
+        """
+
         try:
             log.debug("Destroying domain '{name}'")
 
@@ -88,6 +116,16 @@ class LibvirtHandle:
                 raise
 
     def cleanup_storage(self, name):
+        """
+        Clean up overlay storage for a machine.
+
+        The machine '@name' should have been destroyed prior to calling this
+        method already.
+
+        :param name: name of the machine storage needs to be cleanup up for as
+                     string
+        """
+
         pool_default = self.conn.storagePoolLookupByName("default")
         try:
             log.debug("Destroying storage for '{name}'")

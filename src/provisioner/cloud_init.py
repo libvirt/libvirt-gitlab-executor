@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 
 
 def get_user_data(hostname, phone_home_address):
+    """Generates simple cloud-init user data."""
 
     gitlab_runner = {
         "name": "gitlab-runner",
@@ -49,7 +50,7 @@ def get_user_data(hostname, phone_home_address):
 
 
 class _MyHTTPHandler(BaseHTTPRequestHandler):
-    """Handles HTTP requests to the phone home server."""
+    """Handles HTTP requests to the phone home cloud-init server."""
 
     def do_POST(self):
         if not self.path.strip("/") == "nocloud":

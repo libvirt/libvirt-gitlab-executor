@@ -41,7 +41,14 @@ class Machine:
         self.name = name
 
     def connect(self, ssh_key_path=None):
-        """Opens an SSH channel to the VM."""
+        """
+        Opens an SSH channel to the VM.
+
+        Will use @ssh_key_path for authentication. If no SSH identity was
+        provided, a default one '~/.ssh/id_ed25519' will be tried.
+
+        :param ssh_key_path: path to the SSH key as string
+        """
 
         if ssh_key_path is None:
             ssh_key_path = Path(Path.home(), ".ssh/id_ed25519")
@@ -75,6 +82,9 @@ class Machine:
 
         The instance is created with a virtio UNIX channel so that @wait can
         block until the VM is online.
+
+        :param distro: which distro template to use as string
+        :param size: capacity of the underlying storage in GB, default is 50
         """
 
         log.debug(f"Provisioning machine '{self.name}'")
