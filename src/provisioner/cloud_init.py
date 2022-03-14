@@ -137,4 +137,4 @@ class CloudInitPhoneHomeServer():
         self._httpd_thread.join(timeout=timeout)
 
         if self._httpd_thread.is_alive():
-            raise Exception(f"Waiting for instance timed out ({timeout}s)")
+            raise Exception(f"Instance did not phone home (timeout: {timeout}s)")
