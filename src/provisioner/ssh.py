@@ -12,7 +12,9 @@ from pathlib import Path
 log = logging.getLogger(__name__)
 
 
-def get_user_ssh_keys(username=None):
+def get_user_ssh_keys():
+    """List all SSH keys for the current user."""
+
     pubkeys = []
     for entry in Path(Path.home(), ".ssh").iterdir():
         if entry.suffix != ".pub":
