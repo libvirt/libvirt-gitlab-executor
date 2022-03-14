@@ -100,4 +100,5 @@ class SSHConn:
             print(data.decode(), end="", flush=True)
             data = channel.recv(1024)
 
-        return channel.recv_exit_status()
+        rc = channel.recv_exit_status()
+        return -rc
