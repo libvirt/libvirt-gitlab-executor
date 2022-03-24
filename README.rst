@@ -4,19 +4,19 @@ libvirt-gitlab-executor
 
 This repository provides a simple tool called ``libvirt-gci`` which wraps the
 necessary functionality in order to make use of GitLab's custom executor
-feature and allow GitLab CI pipeline provision and execute job workloads in
-VMs on your host system.
+feature and allows GitLab CI pipeline provision and execute job workloads in
+VMs running on any host system you designated for this use.
 
 
 Prerequisites
 =============
-Not all of the following packages are needed to be installed, especially if
-you want to bring your own machine templates (and not create ones with lcitool),
-but since libvirt is used underneath for the custom executor feature, at least
-``libvirt`` related packages and ``virt-install`` are needed.
-The rest is only needed if you also want to prepare the template VMs using
-`lcitool <https://gitlab.com/libvirt/libvirt-ci>`_, see the whole list of
-requirements below.
+Not all of the following packages need to be installed necessarily, especially
+if you want to bring your own machine templates (and not create ones with
+lcitool), but since libvirt is used underneath for the custom executor feature,
+at least ``libvirt`` related packages and ``virt-install`` are needed.  The
+rest is only needed if you also want to prepare the template VMs using `lcitool
+<https://gitlab.com/libvirt/libvirt-ci>`_, see the whole list of requirements
+below.
 
 *Packages*:
 
@@ -36,10 +36,10 @@ Creating base image templates
 =============================
 
 In order to save storage for concurrent VMs, base image templates need to
-be created for the worker VMs that GitLab executor will spawn. The base images
-will later be used with a QCOW2 overlay image for each GitLab VM instance
-provisioned. If you already have your VMs that you'd like to use as a template,
-you can skip the next *lcitool* part.
+be created for the worker VMs that the GitLab executor will spawn. The base
+images will later be used with a QCOW2 overlay image for each GitLab VM
+instance provisioned. If you already have your VMs that you'd like to use as a
+template, you can skip the next *lcitool* part.
 
 
 Lcitool
@@ -116,8 +116,8 @@ Provisioning a test instance manually
 -------------------------------------
 
 If you experience failures using the setup with GitLab it might be beneficial
-to be able to provision an instance manually the same way gitlab does. The
-reason for that is simple - gitlab always cleans up the machine after the job
+to be able to provision an instance manually the same way GitLab does. The
+reason for that is simple - GitLab always cleans up the machine after the job
 is finished, no matter if it passed or failed. So naturally, one would like to
 poke around the machine to see what could have caused the failure. One way
 of doing it is defining the same environment variables GitLab uses in their CI
@@ -130,7 +130,7 @@ pipeline workflow.
       CUSTOM_ENV_DISTRO=fedora-34 \
       libvirt-gci prepare
 
-The other is to omit them and use the following options:
+The other is to omit them and use the following CLI options:
 
 ::
 
