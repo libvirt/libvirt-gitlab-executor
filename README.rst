@@ -100,6 +100,7 @@ scripts, you're going to use the following in your gitlab-runner config:
 ::
 
     ...
+    [runners.custom]
     prepare_exec = "/home/<user>/.local/bin/libvirt-gci"
     prepare_args = [ "prepare" ]
     run_exec = "/home/<user>/.local/bin/libvirt-gci"
@@ -107,6 +108,8 @@ scripts, you're going to use the following in your gitlab-runner config:
     cleanup_exec = "/home/<user>/.local/bin/libvirt-gci"
     cleanup_args = ["cleanup"]
 
+You'll also need to set the ``builds_dir`` and ``cache_dir`` runner options,
+otherwise GitLab will complain and jobs will automatically abort.
 
 TIP: Don't forget to set the ``concurrent`` argument for the gitlab-runner agent
 to make sure several VM jobs can run in parallel on your host.
