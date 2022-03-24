@@ -63,7 +63,7 @@ using `lcitool <https://gitlab.com/libvirt/libvirt-ci>`_:
 
 ::
 
-    $ lcitool install my-fedora --wait
+    $ lcitool install my-fedora --target fedora-35 --wait
 
 (4) Update the installed instance with dependencies for a given project, in this
     example - *libvirt-tck+runtime*, see lcitool's README on how this works
