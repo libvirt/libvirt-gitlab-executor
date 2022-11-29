@@ -81,7 +81,7 @@ class LibvirtHandle:
 
         # get the base image for the volume
         base_img_name = distro + ".qcow2"
-        base_image_vol = self._get_base_image(base_img_name, "base_imgs")
+        base_image_vol = self._get_base_image(base_img_name, "default")
 
         # parse the base image volume to extract data we'll need to fill in
         # the backing store XML element
