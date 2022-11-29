@@ -101,6 +101,7 @@ class Machine:
         cmd = [
             "virt-install",
             "--connect", "qemu:///system",
+            "--os-variant", "unknown",
             "--name", self.name,
             "--disk", f"vol=default/{self.name},bus=virtio",
             "--vcpus", "4",
