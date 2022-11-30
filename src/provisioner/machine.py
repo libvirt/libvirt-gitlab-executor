@@ -120,9 +120,7 @@ class Machine:
         libvirt_handle = LibvirtHandle()
         libvirt_handle.create_volume(self.name, size, distro)
 
-        # Start the cloud-init phone home server
-        server = cloud_init.CloudInitPhoneHomeServer(self.name)
-        user_data = cloud_init.get_user_data(self.name, server.address)
+        user_data = cloud_init.get_user_data(self.name)
         user_data_file = self._dump_user_data(user_data)
 
         cmd = [

@@ -17,7 +17,7 @@ from provisioner.ssh import get_user_ssh_keys
 log = logging.getLogger(__name__)
 
 
-def get_user_data(hostname, phone_home_address):
+def get_user_data(hostname):
     """Generates simple cloud-init user data."""
 
     gitlab_runner = {
@@ -31,18 +31,10 @@ def get_user_data(hostname, phone_home_address):
         "expire": False,
     }
 
-    host = phone_home_address[0]
-    port = phone_home_address[1]
-    phone_home = {
-        "url": f"http://{host}:{port}/$INSTANCE_ID",
-        "post": "all",
-    }
-
     user_data = {}
     user_data["users"] = [gitlab_runner]
     user_data["chpasswd"] = chpasswd
     user_data["fqdn"] = hostname
-    user_data["phone_home"] = phone_home
 
     log.debug(f"Cloud-init user data: {user_data}")
 
