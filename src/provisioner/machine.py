@@ -40,18 +40,16 @@ class Machine:
     def __init__(self, name):
         self.name = name
 
-    def connect(self, ssh_key_path=None):
+    def connect(self, ssh_key_path):
         """
         Opens an SSH channel to the VM.
 
-        Will use @ssh_key_path for authentication. If no SSH identity was
-        provided, a default one '~/.ssh/id_ed25519' will be tried.
-
-        :param ssh_key_path: path to the SSH key as string
+        :param ssh_key_path: path to the SSH key to be used (as string)
         """
 
         if ssh_key_path is None:
-            ssh_key_path = Path(Path.home(), ".ssh/id_ed25519")
+            raise ValueError(f"Failed to connect to {self.name}: "
+                             "No SSH key specified")
 
         try:
             log.debug(f"Connecting to '{self.name}'")
