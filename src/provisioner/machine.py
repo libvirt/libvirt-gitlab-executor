@@ -91,7 +91,7 @@ class Machine:
 
         # create the storage for the VM first
         libvirt_handle = LibvirtHandle()
-        path = libvirt_handle.create_volume(self.name, size, distro)
+        libvirt_handle.create_volume(self.name, size, distro)
 
         # Start the cloud-init phone home server
         server = cloud_init.CloudInitPhoneHomeServer(self.name)
