@@ -58,12 +58,9 @@ class Machine:
             raise ValueError(f"Failed to connect to {self.name}: "
                              "No SSH key specified")
 
-        try:
-            self.conn.connect(hostname=self.name,
-                              key_filepath=ssh_key_path,
-                              username="gitlab-runner")
-        except Exception as ex:
-            raise Exception(f"Failed to connect to {self.name}: {ex}")
+        self.conn.connect(hostname=self.name,
+                          key_filepath=ssh_key_path,
+                          username="gitlab-runner")
 
     def _dump_user_data(self, user_data):
         tempfile = NamedTemporaryFile(delete=False,
