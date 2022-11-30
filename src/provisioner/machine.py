@@ -37,8 +37,15 @@ class Machine:
         rc = conn.exec(cmdlinestr)
     """
 
+    @property
+    def conn(self):
+        if self._conn is None:
+            self._conn = SSHConn()
+        return self._conn
+
     def __init__(self, name):
         self.name = name
+        self._conn = None
 
     def connect(self, ssh_key_path):
         """
@@ -52,15 +59,11 @@ class Machine:
                              "No SSH key specified")
 
         try:
-            log.debug(f"Connecting to '{self.name}'")
-            conn = SSHConn()
-            conn.connect(hostname=self.name,
-                         key_filepath=ssh_key_path,
-                         username="gitlab-runner")
+            self.conn.connect(hostname=self.name,
+                              key_filepath=ssh_key_path,
+                              username="gitlab-runner")
         except Exception as ex:
             raise Exception(f"Failed to connect to {self.name}: {ex}")
-
-        return conn
 
     def _dump_user_data(self, user_data):
         tempfile = NamedTemporaryFile(delete=False,

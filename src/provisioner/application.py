@@ -105,7 +105,7 @@ class Application(metaclass=Singleton):
             if ssh_key_path is None:
                 raise Exception("No SSH key available")
 
-            conn = machine.connect(ssh_key_path)
+            machine.connect(ssh_key_path)
 
             if configmap["script"]:
                 basename = Path(configmap["executable"]).name
@@ -115,12 +115,12 @@ class Application(metaclass=Singleton):
                     pass
 
                 dest = f"/tmp/{basename}"
-                conn.upload(configmap["executable"], dest)
+                machine.conn.upload(configmap["executable"], dest)
                 cmd_str = "/bin/bash"
                 cmd_args = [dest] + configmap["exec_args"]
 
             cmdlinestr = f"{cmd_str} {' '.join(cmd_args)}"
-            return conn.exec(cmdlinestr)
+            return machine.conn.exec(cmdlinestr)
 
         except Exception as ex:
             raise Exception(
