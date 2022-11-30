@@ -11,6 +11,7 @@ import yaml
 
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from time import sleep
 
 from provisioner import cloud_init
 from provisioner.configmap import ConfigMap
@@ -75,7 +76,34 @@ class Machine:
             fd.write(yaml.dump(user_data, width=inf))
         return tempfile.name
 
-    def provision(self, distro, size=50):
+    def _ssh_wait(self, ssh_key_path):
+        from paramiko import ssh_exception
+
+        # we need to give the machine a head start (up to timeout seconds)
+        # to get an IP lease first and only then we can try SSHing into the
+        # machine (wait in 2s increments)
+        timeout = 30
+        seconds = 2
+        for _ in range(timeout // seconds):
+            sleep(seconds)
+            try:
+                self.connect(ssh_key_path)
+                return
+            except ssh_exception.NoValidConnectionsError as ex:
+                # NoValidConnectionsError is a subclass of various socket
+                # errors which in turn is a subclass of OSError. We're
+                # specifically interested in errno 113 'No route to host'
+                # which we can ignore for the duration of the timeout
+                # period
+                for error in ex.errors.values():
+                    if isinstance(error, OSError) and error.errno == 113:
+                        break
+                else:
+                    raise ex
+
+        raise Exception(f"Failed to connect to {self.name}: timeout reached")
+
+    def provision(self, distro, ssh_key_path, size=50):
         """
         Provisions a new transient VM instance from an existing base image.
 
@@ -121,9 +149,9 @@ class Machine:
 
         subprocess.check_call(cmd)
         try:
-            server.wait()
-        except Exception:
-            raise
+            self._ssh_wait(ssh_key_path)
+        except Exception as ex:
+            raise ex
         finally:
             os.unlink(user_data_file)
 

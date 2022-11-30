@@ -85,8 +85,7 @@ class Application(metaclass=Singleton):
             if ssh_key_path is None:
                 raise Exception("No SSH key available")
 
-            machine.provision(configmap["distro"])
-            machine.connect(ssh_key_path)
+            machine.provision(configmap["distro"], ssh_key_path)
             return 0
         except Exception as ex:
             raise Exception(f"Failed to prepare machine '{machine_name}': {ex}")
