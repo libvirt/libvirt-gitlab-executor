@@ -53,9 +53,10 @@ class Machine:
 
         try:
             log.debug(f"Connecting to '{self.name}'")
-            conn = SSHConn(hostname=self.name,
-                           username="gitlab-runner",
-                           key_filepath=ssh_key_path)
+            conn = SSHConn()
+            conn.connect(hostname=self.name,
+                         key_filepath=ssh_key_path,
+                         username="gitlab-runner")
         except Exception as ex:
             raise Exception(f"Failed to connect to {self.name}: {ex}")
 
