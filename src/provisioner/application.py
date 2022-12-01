@@ -32,6 +32,17 @@ class Application(metaclass=Singleton):
         configmap["project"] = project
         configmap["job_id"] = job_id
 
+    @staticmethod
+    def _get_ssh_key_path(configmap):
+        if configmap["ssh_key_file"] is None:
+            for identity in ["id_ed25519", "id_rsa"]:
+                p = Path(Path.home(), ".ssh", identity)
+                if p.exists():
+                    configmap["ssh_key_file"] = p
+                    break
+
+        return configmap["ssh_key_file"]
+
     def _get_machine_name(self):
         configmap = ConfigMap()
         name = configmap["machine"]
@@ -68,9 +79,14 @@ class Application(metaclass=Singleton):
 
         machine_name = self._get_machine_name()
         machine = Machine(machine_name)
+
         try:
+            ssh_key_path = self._get_ssh_key_path(configmap)
+            if ssh_key_path is None:
+                raise Exception("No SSH key available")
+
             machine.provision(configmap["distro"])
-            machine.connect(configmap["ssh_key_file"])
+            machine.connect(ssh_key_path)
             return 0
         except Exception as ex:
             raise Exception(f"Failed to prepare machine '{machine_name}': {ex}")
@@ -85,7 +101,11 @@ class Application(metaclass=Singleton):
         cmd_args = configmap["exec_args"]
         machine = Machine(machine_name)
         try:
-            conn = machine.connect(configmap["ssh_key_file"])
+            ssh_key_path = self._get_ssh_key_path(configmap)
+            if ssh_key_path is None:
+                raise Exception("No SSH key available")
+
+            conn = machine.connect(ssh_key_path)
 
             if configmap["script"]:
                 basename = Path(configmap["executable"]).name
