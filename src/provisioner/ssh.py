@@ -38,20 +38,23 @@ class SSHConn:
         def missing_host_key(self, client, hostname, key):
             return
 
-    def __init__(self):
+    def __init__(self, hostname):
+        self.hostname = hostname
         self._client = paramiko.SSHClient()
         self._client.load_system_host_keys()
         self._client.set_missing_host_key_policy(self._IgnorePolicy)
 
-    def connect(self, hostname, key_filepath, **kwargs):
+    def connect(self, key_filepath, **kwargs):
         log.debug("Establishing SSH connection: "
-                  f"hostname={hostname},key_filepath={key_filepath}")
+                  f"hostname={self.hostname},key_filepath={key_filepath}")
 
         ssh_key_path = key_filepath
         if isinstance(key_filepath, Path):
             ssh_key_path = key_filepath.as_posix()
 
-        self._client.connect(hostname, key_filename=ssh_key_path, **kwargs)
+        self._client.connect(self.hostname,
+                             key_filename=ssh_key_path,
+                             **kwargs)
 
     def upload(self, src, dst):
         """

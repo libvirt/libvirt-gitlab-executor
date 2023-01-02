@@ -40,7 +40,7 @@ class Machine:
     @property
     def conn(self):
         if self._conn is None:
-            self._conn = SSHConn()
+            self._conn = SSHConn(self.name)
         return self._conn
 
     def __init__(self, name):
@@ -58,8 +58,7 @@ class Machine:
             raise ValueError(f"Failed to connect to {self.name}: "
                              "No SSH key specified")
 
-        self.conn.connect(hostname=self.name,
-                          key_filepath=ssh_key_path,
+        self.conn.connect(key_filepath=ssh_key_path,
                           username="gitlab-runner")
 
     def _dump_user_data(self, user_data):
