@@ -87,17 +87,22 @@ class Machine:
             try:
                 self.connect(ssh_key_path)
                 return
-            except ssh_exception.NoValidConnectionsError as ex:
-                # NoValidConnectionsError is a subclass of various socket
-                # errors which in turn is a subclass of OSError. We're
-                # specifically interested in errno 113 'No route to host'
-                # which we can ignore for the duration of the timeout
-                # period
-                for error in ex.errors.values():
-                    if isinstance(error, OSError) and error.errno == 113:
-                        break
-                else:
+            except (OSError, ssh_exception.NoValidConnectionsError) as ex:
+                if isinstance(ex, OSError):
+                    if ex.errno == -2:  # Name or service not known
+                        continue
                     raise ex
+                else:
+                    # NoValidConnectionsError is a subclass of various socket
+                    # errors which in turn is a subclass of OSError. We're
+                    # specifically interested in errno 113 'No route to host'
+                    # which we can ignore for the duration of the timeout
+                    # period
+                    for error in ex.errors.values():
+                        if isinstance(error, OSError) and error.errno == 113:
+                            break
+                    else:
+                        raise ex
 
         raise Exception(f"Failed to connect to {self.name}: timeout reached")
 
