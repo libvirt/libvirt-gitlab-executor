@@ -70,7 +70,7 @@ class Machine:
             # nasty hack to force PyYAML not to break long lines by default
             from math import inf
 
-            # must write the header first, otherwise cloud-init will ignore the file
+            # write the header first, otherwise cloud-init will ignore the file
             fd.write("#cloud-config\n")
             fd.write(yaml.dump(user_data, width=inf))
         return tempfile.name
