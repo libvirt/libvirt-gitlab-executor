@@ -9,7 +9,6 @@ import os
 import subprocess
 import yaml
 
-from pathlib import Path
 from tempfile import NamedTemporaryFile
 from time import sleep
 
