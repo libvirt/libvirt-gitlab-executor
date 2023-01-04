@@ -59,7 +59,7 @@ class Machine:
                              "No SSH key specified")
 
         self.conn.connect(key_filepath=ssh_key_path,
-                          username="gitlab-runner")
+                          username="root")
 
     def _dump_user_data(self, user_data):
         tempfile = NamedTemporaryFile(delete=False,
