@@ -123,7 +123,7 @@ class Application(metaclass=Singleton):
 
         except Exception as ex:
             raise Exception(
-                f"Failed to execute '{cmdlinestr}' on '{machine_name}': {ex}")
+                f"Failed to execute workload on '{machine_name}': {ex}")
 
     def _action_cleanup(self):
         """Cleans up the VM (including storage) given a name."""
