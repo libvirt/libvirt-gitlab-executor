@@ -97,12 +97,13 @@ class Machine:
                 else:
                     # NoValidConnectionsError is a subclass of various socket
                     # errors which in turn is a subclass of OSError. We're
-                    # specifically interested in errno 113 'No route to host'
-                    # which we can ignore for the duration of the timeout
+                    # specifically interested in EHOSTUNREACH and ECONNREFUSED
+                    # errnos which we can ignore for the duration of the timeout
                     # period
                     for error in ex.errors.values():
-                        if isinstance(error, OSError) and error.errno == errno.EHOSTUNREACH:
-                            break
+                        if isinstance(error, OSError):
+                            if error.errno == errno.EHOSTUNREACH or error.errno == errno.ECONNREFUSED:
+                                break
                     else:
                         raise ex
 
