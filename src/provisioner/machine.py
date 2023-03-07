@@ -4,6 +4,7 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import errno
 import logging
 import os
 import subprocess
@@ -76,6 +77,7 @@ class Machine:
 
     def _ssh_wait(self, ssh_key_path):
         from paramiko import ssh_exception
+        from socket import EAI_NONAME
 
         # we need to give the machine a head start (up to timeout seconds)
         # to get an IP lease first and only then we can try SSHing into the
@@ -89,7 +91,7 @@ class Machine:
                 return
             except (OSError, ssh_exception.NoValidConnectionsError) as ex:
                 if isinstance(ex, OSError):
-                    if ex.errno == -2:  # Name or service not known
+                    if ex.errno == EAI_NONAME:  # Name or service not known
                         continue
                     raise ex
                 else:
@@ -99,7 +101,7 @@ class Machine:
                     # which we can ignore for the duration of the timeout
                     # period
                     for error in ex.errors.values():
-                        if isinstance(error, OSError) and error.errno == 113:
+                        if isinstance(error, OSError) and error.errno == errno.EHOSTUNREACH:
                             break
                     else:
                         raise ex
