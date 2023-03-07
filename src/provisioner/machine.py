@@ -80,7 +80,7 @@ class Machine:
         # we need to give the machine a head start (up to timeout seconds)
         # to get an IP lease first and only then we can try SSHing into the
         # machine (wait in 2s increments)
-        timeout = 30
+        timeout = 60
         seconds = 2
         for _ in range(timeout // seconds):
             sleep(seconds)
