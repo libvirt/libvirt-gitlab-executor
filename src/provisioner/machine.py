@@ -150,7 +150,25 @@ class Machine:
         if not ConfigMap()["debug"]:
             cmd.append("--quiet")
 
-        subprocess.check_call(cmd)
+        # virt-install may fail for various reasons, e.g. if too many
+        # concurrent instances are trying to refresh its own created
+        # 'boot-scratch' storage pool to store user cloud-init configs.
+        # So, since we have no control over this, let's give virt-install a few
+        # re-tries before failing fatally with the last active exception
+        save_ex = None
+        for retry in range(3):
+            try:
+                subprocess.run(cmd, capture_output=True, check=True)
+                break
+            except subprocess.CalledProcessError as ex:
+                log.debug(f"{ex}")
+                log.debug(f"Re-trying command '{cmd}'")
+                save_ex = ex
+                continue
+        else:
+            log.debug("Provision re-try limit reached")
+            raise save_ex
+
         try:
             self._ssh_wait(ssh_key_path)
         except Exception as ex:
