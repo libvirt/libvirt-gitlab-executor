@@ -89,23 +89,22 @@ class Machine:
             try:
                 self.connect(ssh_key_path)
                 return
-            except (OSError, ssh_exception.NoValidConnectionsError) as ex:
-                if isinstance(ex, OSError):
-                    if ex.errno == EAI_NONAME:  # Name or service not known
-                        continue
-                    raise ex
+            except ssh_exception.NoValidConnectionsError as ex:
+                # NoValidConnectionsError is a subclass of various socket
+                # errors which in turn is a subclass of OSError. We're
+                # specifically interested in EHOSTUNREACH and ECONNREFUSED
+                # errnos which we can ignore for the duration of the timeout
+                # period
+                for error in ex.errors.values():
+                    if isinstance(error, OSError):
+                        if error.errno == errno.EHOSTUNREACH or error.errno == errno.ECONNREFUSED:
+                            break
                 else:
-                    # NoValidConnectionsError is a subclass of various socket
-                    # errors which in turn is a subclass of OSError. We're
-                    # specifically interested in EHOSTUNREACH and ECONNREFUSED
-                    # errnos which we can ignore for the duration of the timeout
-                    # period
-                    for error in ex.errors.values():
-                        if isinstance(error, OSError):
-                            if error.errno == errno.EHOSTUNREACH or error.errno == errno.ECONNREFUSED:
-                                break
-                    else:
-                        raise ex
+                    raise ex
+            except OSError as ex:
+                if ex.errno == EAI_NONAME:  # Name or service not known
+                    continue
+                raise ex
 
         raise Exception(f"Failed to connect to {self.name}: timeout reached")
 
