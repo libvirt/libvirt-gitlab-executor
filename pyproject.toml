@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=62.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "libvirt-gci"
+version = "0.1"
+description = "GitLab CI libvirt VM provisioner"
+readme = "README.rst"
+keywords = ["libvirt ci"]
+requires-python = ">=3.8"
+
+authors = [
+    { name = "Erik Skultety", email = "eskultet@redhat.com" }
+]
+
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)",
+]
+
+dependencies = [
+    "ansible",
+    "ansible-runner >= 2.1.1",
+    "paramiko",
+    "PyYAML",
+]
+
+[project.urls]
+repository = "https://gitlab.com/libvirt/libvirt-gitlab-executor.git"
+
+[project.scripts]
+libvirt-gci = "provisioner.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
